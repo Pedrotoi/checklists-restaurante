@@ -636,7 +636,7 @@
         <div class="progress-container">
             <div class="progress-header">
                 <span class="progress-label">Progreso</span>
-                <span class="progress-count" id="progressText">0 de 8 tareas</span>
+                <span class="progress-count" id="progressText">0 de 9 tareas</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
@@ -648,7 +648,7 @@
             <div class="category-header">
                 <div class="category-icon">🥐</div>
                 <span class="category-title">Preparación inicial</span>
-                <span class="category-count" id="cat-prep">0/4</span>
+                <span class="category-count" id="cat-prep">0/5</span>
             </div>
             <div class="task-list">
                 <div class="task-item" data-task="1" onclick="toggleTask(this)">
@@ -687,6 +687,15 @@
                         <div class="task-time"></div>
                     </div>
                 </div>
+                <div class="task-item" data-task="5" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender extractor</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -698,7 +707,7 @@
                 <span class="category-count" id="cat-inventory">0/2</span>
             </div>
             <div class="task-list">
-                <div class="task-item" data-task="5" onclick="toggleTask(this)">
+                <div class="task-item" data-task="6" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
@@ -707,7 +716,7 @@
                         <div class="task-time"></div>
                     </div>
                 </div>
-                <div class="task-item" data-task="6" onclick="toggleTask(this)">
+                <div class="task-item" data-task="7" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
@@ -727,7 +736,7 @@
                 <span class="category-count" id="cat-personal">0/2</span>
             </div>
             <div class="task-list">
-                <div class="task-item" data-task="7" onclick="toggleTask(this)">
+                <div class="task-item" data-task="8" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
@@ -736,7 +745,7 @@
                         <div class="task-time"></div>
                     </div>
                 </div>
-                <div class="task-item" data-task="8" onclick="toggleTask(this)">
+                <div class="task-item" data-task="9" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
@@ -786,7 +795,7 @@
         // Constants
         const DEADLINE_HOUR = 7;
         const DEADLINE_MINUTE = 15;
-        const TOTAL_TASKS = 8;
+        const TOTAL_TASKS = 9;
         const STORAGE_KEY = 'checklist-cocina';
 
         // State
@@ -897,11 +906,11 @@
             document.getElementById('progressText').textContent = `${completed} de ${TOTAL_TASKS} tareas`;
 
             // Update category counts
-            const prep = ['1', '2', '3', '4'].filter(t => state.tasks[t]).length;
-            const inventory = ['5', '6'].filter(t => state.tasks[t]).length;
-            const personal = ['7', '8'].filter(t => state.tasks[t]).length;
+            const prep = ['1', '2', '3', '4', '5'].filter(t => state.tasks[t]).length;
+            const inventory = ['6', '7'].filter(t => state.tasks[t]).length;
+            const personal = ['8', '9'].filter(t => state.tasks[t]).length;
             
-            document.getElementById('cat-prep').textContent = `${prep}/4`;
+            document.getElementById('cat-prep').textContent = `${prep}/5`;
             document.getElementById('cat-inventory').textContent = `${inventory}/2`;
             document.getElementById('cat-personal').textContent = `${personal}/2`;
 
