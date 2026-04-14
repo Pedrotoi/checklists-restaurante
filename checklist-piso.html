@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Piso | Apertura</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0D0D0D;
+            --bg-secondary: #161616;
+            --bg-card: #1A1A1A;
+            --bg-hover: #242424;
+            --accent: #E8C547;
+            --accent-dim: rgba(232, 197, 71, 0.15);
+            --accent-glow: rgba(232, 197, 71, 0.3);
+            --text-primary: #FAFAFA;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --success: #34D399;
+            --success-dim: rgba(52, 211, 153, 0.15);
+            --warning: #FBBF24;
+            --warning-dim: rgba(251, 191, 36, 0.15);
+            --danger: #F87171;
+            --danger-dim: rgba(248, 113, 113, 0.15);
+            --border: #2A2A2A;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .header h1 span {
+            color: var(--accent);
+        }
+
+        .date-display {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Config Panel */
+        .config-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .config-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .config-item label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .config-item input, .config-item select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .config-item input:focus, .config-item select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Progress */
+        .progress-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .progress-count {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), #F0D76A);
+        }
+
+        /* Timer Alert */
+        .timer-alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .timer-alert.warning {
+            border-color: var(--warning);
+            background: var(--warning-dim);
+        }
+
+        .timer-alert.danger {
+            border-color: var(--danger);
+            background: var(--danger-dim);
+        }
+
+        .timer-alert.success {
+            border-color: var(--success);
+            background: var(--success-dim);
+        }
+
+        .timer-icon {
+            font-size: 1.5rem;
+        }
+
+        .timer-content {
+            flex: 1;
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timer-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .timer-value.warning { color: var(--warning); }
+        .timer-value.danger { color: var(--danger); }
+        .timer-value.success { color: var(--success); }
+
+        /* Category */
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .category-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: var(--accent-dim);
+        }
+
+        .category-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .category-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* Task Items */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .task-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .task-item:active {
+            transform: scale(0.98);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            border-color: var(--success);
+            background: var(--success-dim);
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-top: 1px;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .task-checkbox svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--bg-primary);
+            stroke-width: 3;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+
+        .task-item.completed .task-checkbox svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .task-time {
+            font-size: 0.7rem;
+            color: var(--success);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .task-item.completed .task-time {
+            display: block;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .submit-btn:disabled {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .submit-btn:not(:disabled):hover {
+            background: #F0D76A;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .submit-btn:not(:disabled):active {
+            transform: translateY(0);
+        }
+
+        .submit-warning {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Completed State */
+        .completed-banner {
+            display: none;
+            text-align: center;
+            padding: 24px;
+            background: var(--success-dim);
+            border: 1px solid var(--success);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+        }
+
+        .completed-banner.active {
+            display: block;
+        }
+
+        .completed-banner .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .completed-banner h2 {
+            color: var(--success);
+            margin-bottom: 4px;
+        }
+
+        .completed-banner p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: var(--success-dim);
+        }
+
+        .modal h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.primary {
+            background: var(--success);
+            color: var(--bg-primary);
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* History */
+        .history-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .history-log {
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .history-entry {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .history-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .history-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-time {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-badge">
+                <span>🍽️</span>
+                <span>Personal de Piso</span>
+            </div>
+            <h1>Checklist de <span>Apertura</span></h1>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <!-- Completed Banner -->
+        <div class="completed-banner" id="completedBanner">
+            <div class="icon">✅</div>
+            <h2>¡Apertura Completada!</h2>
+            <p>Todas las tareas fueron completadas a las <span id="completedTime">--:--</span></p>
+        </div>
+
+        <!-- Config Panel -->
+        <div class="config-panel" id="configPanel">
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>Nombre del responsable</label>
+                    <input type="text" id="responsibleName" placeholder="Tu nombre completo">
+                </div>
+                <div class="config-item">
+                    <label>Sucursal</label>
+                    <select id="branch">
+                        <option value="">Seleccionar...</option>
+                        <option value="Naco">Naco</option>
+                        <option value="Serralles">Serralles</option>
+                    </select>
+                </div>
+                <input type="hidden" id="supervisorPhone" value="8098897577">
+            </div>
+        </div>
+
+        <!-- Timer Alert -->
+        <div class="timer-alert" id="timerAlert">
+            <div class="timer-icon">⏰</div>
+            <div class="timer-content">
+                <div class="timer-label">Hora límite: 7:30 AM</div>
+                <div class="timer-value" id="timerValue">--:--</div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <span class="progress-label">Progreso</span>
+                <span class="progress-count" id="progressText">0 de 9 tareas</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Encendido y climatización -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">💡</div>
+                <span class="category-title">Encendido y climatización</span>
+                <span class="category-count" id="cat-setup">0/3</span>
+            </div>
+            <div class="task-list">
+                <div class="task-item" data-task="1" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender las luces</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="2" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender 1 aire del salón</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="3" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender 1 aire/abanico de terraza</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limpieza y organización -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">🧹</div>
+                <span class="category-title">Limpieza y organización</span>
+                <span class="category-count" id="cat-cleaning">0/3</span>
+            </div>
+            <div class="task-list">
+                <div class="task-item" data-task="4" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Limpiar mesas y pisos de salón y terraza</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="5" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Organizar servilleteros y azucareros</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="6" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Revisar baño limpio, colocar papel para manos y rellenar jabón</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preparación y comunicación -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">☕</div>
+                <span class="category-title">Preparación y comunicación</span>
+                <span class="category-count" id="cat-prep">0/3</span>
+            </div>
+            <div class="task-list">
+                <div class="task-item" data-task="7" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender máquina de café</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="8" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Consultar con cocina disponibilidad del menú y notificar a supervisor productos no disponibles</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="9" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Estar peinada y arreglada lista para recibir clientes</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section" id="submitSection">
+            <button class="submit-btn" id="submitBtn" onclick="submitChecklist()" disabled>
+                <span>✓</span> Completar Apertura
+            </button>
+            <p class="submit-warning" id="submitWarning">Completa todas las tareas para habilitar</p>
+        </div>
+
+        <!-- History -->
+        <div class="history-section">
+            <div class="history-header">
+                <span class="history-title">📜 Registro de hoy</span>
+            </div>
+            <div class="history-log" id="historyLog">
+                <div class="history-entry" style="color: var(--text-muted); font-style: italic;">
+                    Sin actividad aún...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-icon">✅</div>
+            <h3>¡Apertura Completada!</h3>
+            <p id="modalMessage">El checklist ha sido completado exitosamente.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeModal()">Cerrar</button>
+                <button class="modal-btn primary" onclick="sendWhatsApp()">Enviar WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const DEADLINE_HOUR = 7;
+        const DEADLINE_MINUTE = 30;
+        const TOTAL_TASKS = 9;
+        const STORAGE_KEY = 'checklist-piso';
+
+        // State
+        const state = {
+            tasks: {},
+            completed: false,
+            completedAt: null,
+            history: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setCurrentDate();
+            loadState();
+            updateProgress();
+            startTimer();
+            setInterval(updateTimer, 1000);
+        });
+
+        function setCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-DO', options);
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                const today = new Date().toDateString();
+                
+                if (data.date === today) {
+                    Object.assign(state, data.state);
+                    
+                    // Restore tasks
+                    document.querySelectorAll('.task-item').forEach(task => {
+                        const taskId = task.dataset.task;
+                        if (state.tasks[taskId]) {
+                            task.classList.add('completed');
+                            task.querySelector('.task-time').textContent = `✓ ${state.tasks[taskId]}`;
+                        }
+                    });
+
+                    // Restore history
+                    if (data.history) {
+                        state.history = data.history;
+                        renderHistory();
+                    }
+
+                    // Check if completed
+                    if (state.completed) {
+                        showCompletedState();
+                    }
+                }
+            }
+
+            // Restore config
+            const config = localStorage.getItem('piso-config');
+            if (config) {
+                const configData = JSON.parse(config);
+                document.getElementById('responsibleName').value = configData.name || '';
+                document.getElementById('branch').value = configData.branch || '';
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                date: new Date().toDateString(),
+                state: state,
+                history: state.history
+            }));
+
+            localStorage.setItem('piso-config', JSON.stringify({
+                name: document.getElementById('responsibleName').value,
+                branch: document.getElementById('branch').value
+            }));
+        }
+
+        function toggleTask(element) {
+            if (state.completed) return;
+
+            const taskId = element.dataset.task;
+            const isCompleting = !element.classList.contains('completed');
+            
+            if (isCompleting) {
+                const time = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
+                element.classList.add('completed');
+                element.querySelector('.task-time').textContent = `✓ ${time}`;
+                state.tasks[taskId] = time;
+                
+                const taskText = element.querySelector('.task-text').textContent;
+                addHistoryEntry(`${taskText.substring(0, 35)}...`);
+            } else {
+                element.classList.remove('completed');
+                element.querySelector('.task-time').textContent = '';
+                delete state.tasks[taskId];
+            }
+
+            updateProgress();
+            saveState();
+        }
+
+        function updateProgress() {
+            const completed = Object.keys(state.tasks).length;
+            const percentage = Math.round((completed / TOTAL_TASKS) * 100);
+
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${completed} de ${TOTAL_TASKS} tareas`;
+
+            // Update category counts
+            const setup = ['1', '2', '3'].filter(t => state.tasks[t]).length;
+            const cleaning = ['4', '5', '6'].filter(t => state.tasks[t]).length;
+            const prep = ['7', '8', '9'].filter(t => state.tasks[t]).length;
+            
+            document.getElementById('cat-setup').textContent = `${setup}/3`;
+            document.getElementById('cat-cleaning').textContent = `${cleaning}/3`;
+            document.getElementById('cat-prep').textContent = `${prep}/3`;
+
+            // Update submit button
+            const submitBtn = document.getElementById('submitBtn');
+            const warning = document.getElementById('submitWarning');
+            
+            if (completed === TOTAL_TASKS) {
+                submitBtn.disabled = false;
+                warning.style.display = 'none';
+            } else {
+                submitBtn.disabled = true;
+                warning.style.display = 'block';
+                warning.textContent = `Faltan ${TOTAL_TASKS - completed} tareas por completar`;
+            }
+        }
+
+        function startTimer() {
+            updateTimer();
+        }
+
+        function updateTimer() {
+            if (state.completed) {
+                document.getElementById('timerAlert').classList.add('success');
+                document.getElementById('timerValue').textContent = 'COMPLETADO';
+                document.getElementById('timerValue').className = 'timer-value success';
+                return;
+            }
+
+            const now = new Date();
+            const deadline = new Date();
+            deadline.setHours(DEADLINE_HOUR, DEADLINE_MINUTE, 0, 0);
+
+            const diff = deadline - now;
+            const timerAlert = document.getElementById('timerAlert');
+            const timerValue = document.getElementById('timerValue');
+
+            if (diff <= 0) {
+                timerAlert.classList.remove('warning');
+                timerAlert.classList.add('danger');
+                timerValue.textContent = '¡TIEMPO VENCIDO!';
+                timerValue.className = 'timer-value danger';
+                
+                // Check if should send overdue notification
+                checkOverdueNotification();
+            } else {
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                timerValue.textContent = `${hours}h ${minutes}m ${seconds}s restantes`;
+                
+                if (diff < 900000) { // Less than 15 minutes
+                    timerAlert.classList.add('warning');
+                    timerValue.className = 'timer-value warning';
+                } else {
+                    timerAlert.classList.remove('warning', 'danger');
+                    timerValue.className = 'timer-value';
+                }
+            }
+        }
+
+        let overdueNotificationSent = false;
+        function checkOverdueNotification() {
+            if (overdueNotificationSent || state.completed) return;
+            
+            const now = new Date();
+            const deadline = new Date();
+            deadline.setHours(DEADLINE_HOUR, DEADLINE_MINUTE, 0, 0);
+            
+            const diff = now - deadline;
+            // Send notification 2 minutes after deadline
+            if (diff > 0 && diff < 180000) {
+                overdueNotificationSent = true;
+                const name = document.getElementById('responsibleName').value || 'Sin nombre';
+                const branch = document.getElementById('branch').value || 'Sin sucursal';
+                
+                if (confirm(`⚠️ El checklist no se completó a tiempo.\n\n¿Enviar alerta al supervisor?`)) {
+                    sendOverdueWhatsApp(name, branch);
+                }
+            }
+        }
+
+        async function submitChecklist() {
+            const time = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
+            const fecha = new Date().toLocaleDateString('es-DO');
+            const name = document.getElementById('responsibleName').value || 'Sin nombre';
+            const branch = document.getElementById('branch').value || 'Sin sucursal';
+            
+            state.completed = true;
+            state.completedAt = time;
+            
+            addHistoryEntry('✅ CHECKLIST COMPLETADO');
+            saveState();
+            
+            // Enviar a Google Sheets
+            try {
+                await fetch('https://script.google.com/macros/s/AKfycby7N1_WiICUM_ZtxYCX7upkuyCfuhGKN9HgfHsIcoulRXw-xRPZpYWsKkXbHMiDAPpJwg/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fecha: fecha,
+                        hora: time,
+                        sucursal: branch,
+                        area: 'PISO',
+                        responsable: name,
+                        estado: 'COMPLETADO'
+                    })
+                });
+            } catch(e) {
+                console.log('Error enviando a Sheets:', e);
+            }
+            
+            document.getElementById('completedTime').textContent = time;
+            document.getElementById('modalMessage').textContent = 
+                `El checklist de PISO ha sido completado exitosamente a las ${time}.`;
+            
+            showCompletedState();
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function showCompletedState() {
+            document.getElementById('completedBanner').classList.add('active');
+            document.getElementById('completedTime').textContent = state.completedAt;
+            document.getElementById('submitSection').style.display = 'none';
+            document.getElementById('timerAlert').classList.add('success');
+            document.getElementById('timerValue').textContent = 'COMPLETADO';
+            document.getElementById('timerValue').className = 'timer-value success';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function sendWhatsApp() {
+            const phone = document.getElementById('supervisorPhone').value;
+            const name = document.getElementById('responsibleName').value || 'Sin nombre';
+            const branch = document.getElementById('branch').value || 'Sin sucursal';
+            const time = state.completedAt;
+
+            const message = `✅ *APERTURA PISO COMPLETADA*
+
+📍 Sucursal: ${branch}
+👤 Responsable: ${name}
+⏰ Hora: ${time}
+
+_Control Operativo Diario_`;
+
+            if (phone) {
+                const cleanPhone = phone.replace(/\D/g, '');
+                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+            } else {
+                alert('Por favor ingresa el número de WhatsApp del supervisor');
+            }
+            
+            closeModal();
+        }
+
+        function sendOverdueWhatsApp(name, branch) {
+            const phone = document.getElementById('supervisorPhone').value;
+            if (!phone) return;
+
+            const message = `⚠️ *ALERTA: CHECKLIST PISO PENDIENTE*
+
+📍 Sucursal: ${branch}
+👤 Responsable: ${name}
+⏰ Hora límite: 7:30 AM
+📋 Estado: NO COMPLETADO
+
+_El checklist de apertura no fue completado a tiempo_`;
+
+            const cleanPhone = phone.replace(/\D/g, '');
+            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function addHistoryEntry(text) {
+            const time = new Date().toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            state.history.unshift({ text, time });
+            
+            if (state.history.length > 20) {
+                state.history = state.history.slice(0, 20);
+            }
+
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const log = document.getElementById('historyLog');
+            
+            if (state.history.length === 0) {
+                log.innerHTML = '<div class="history-entry" style="color: var(--text-muted); font-style: italic;">Sin actividad aún...</div>';
+                return;
+            }
+
+            log.innerHTML = state.history.map(entry => `
+                <div class="history-entry">
+                    <div class="history-dot"></div>
+                    <span class="history-text">${entry.text}</span>
+                    <span class="history-time">${entry.time}</span>
+                </div>
+            `).join('');
+        }
+
+        // Save config on change
+        document.querySelectorAll('.config-item input, .config-item select').forEach(el => {
+            el.addEventListener('change', saveState);
+        });
+    </script>
+</body>
+</html>
