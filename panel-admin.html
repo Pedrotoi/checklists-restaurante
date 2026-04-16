@@ -710,13 +710,15 @@
                 allRecords = [];
                 if (data.table && data.table.rows) {
                     data.table.rows.forEach((row, index) => {
-                        if (index === 0) return; // Skip header if present in data
-                        
                         const cells = row.c;
-                        if (cells && cells[0]) {
+                        if (cells && cells[0] && cells[0].v) {
+                            const fecha = cells[0]?.v || '';
+                            // Skip header row
+                            if (fecha === 'Fecha') return;
+                            
                             allRecords.push({
-                                fecha: cells[0]?.v || '',
-                                hora: cells[1]?.v || '',
+                                fecha: cells[0]?.f || cells[0]?.v || '',
+                                hora: cells[1]?.f || cells[1]?.v || '',
                                 sucursal: cells[2]?.v || '',
                                 area: cells[3]?.v || '',
                                 responsable: cells[4]?.v || '',
@@ -726,9 +728,7 @@
                     });
                 }
 
-                // Remove header row if it got included
-                allRecords = allRecords.filter(r => r.fecha !== 'Fecha' && r.fecha !== '');
-
+                console.log('Records loaded:', allRecords);
                 filterByDate();
                 updateLastUpdate();
 
@@ -743,23 +743,24 @@
 
         function filterByDate() {
             const dateInput = document.getElementById('dateFilter').value;
-            const quickBtns = document.querySelectorAll('.quick-date-btn');
             
             if (!dateInput) {
                 filteredRecords = [...allRecords];
             } else {
-                // Format date for comparison
-                const selectedDate = new Date(dateInput + 'T00:00:00');
-                const formattedDate = selectedDate.toLocaleDateString('es-DO');
+                // Parse selected date
+                const [year, month, day] = dateInput.split('-');
+                const selectedFormatted = `${parseInt(day)}/${parseInt(month)}/${year}`;
                 
                 filteredRecords = allRecords.filter(r => {
-                    // Try different date formats
-                    return r.fecha === formattedDate || 
+                    // Compare with different possible formats
+                    return r.fecha === selectedFormatted || 
+                           r.fecha === `${day}/${month}/${year}` ||
                            r.fecha === dateInput ||
-                           r.fecha.includes(dateInput.split('-').reverse().join('/'));
+                           r.fecha.includes(`${parseInt(day)}/${parseInt(month)}/${year}`);
                 });
             }
 
+            console.log('Filtered records:', filteredRecords);
             updateStats();
             updateBranchStatus();
             renderTable();
@@ -818,11 +819,13 @@
         }
 
         function updateStats() {
-            const today = new Date().toLocaleDateString('es-DO');
-            const todayRecords = allRecords.filter(r => r.fecha === today || r.fecha.includes(new Date().toISOString().split('T')[0].split('-').reverse().join('/')));
+            const today = new Date();
+            const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+            
+            const todayRecords = allRecords.filter(r => r.fecha === todayFormatted);
             
             const completedToday = todayRecords.length;
-            const pisoCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'PISO').length;
+            const pisoCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'COCINA' ? false : r.area?.toUpperCase() === 'PISO').length;
             const cocinaCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'COCINA').length;
 
             document.getElementById('statCompleted').textContent = completedToday;
@@ -831,25 +834,25 @@
             document.getElementById('statTotal').textContent = filteredRecords.length;
 
             // Update card color based on completion
-            const completedCard = document.querySelector('.stat-card.success');
+            const completedCard = document.querySelector('.stat-card');
+            completedCard.classList.remove('success', 'warning', 'danger');
             if (completedToday >= 4) {
-                completedCard.classList.remove('warning', 'danger');
                 completedCard.classList.add('success');
             } else if (completedToday >= 2) {
-                completedCard.classList.remove('success', 'danger');
                 completedCard.classList.add('warning');
             } else {
-                completedCard.classList.remove('success', 'warning');
                 completedCard.classList.add('danger');
             }
         }
 
         function updateBranchStatus() {
-            const today = new Date().toLocaleDateString('es-DO');
-            const todayRecords = allRecords.filter(r => {
-                return r.fecha === today || 
-                       r.fecha.includes(new Date().toISOString().split('T')[0].split('-').reverse().join('/'));
-            });
+            const today = new Date();
+            const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+            
+            const todayRecords = allRecords.filter(r => r.fecha === todayFormatted);
+
+            console.log('Today formatted:', todayFormatted);
+            console.log('Today records:', todayRecords);
 
             const branches = ['Naco', 'Serralles'];
             const areas = ['PISO', 'COCINA'];
