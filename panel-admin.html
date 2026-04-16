@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Control | Checklists Restaurante</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0A0A0B;
+            --bg-secondary: #121214;
+            --bg-card: #18181B;
+            --bg-hover: #1F1F23;
+            --accent: #8B5CF6;
+            --accent-dim: rgba(139, 92, 246, 0.15);
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --piso: #E8C547;
+            --piso-dim: rgba(232, 197, 71, 0.15);
+            --cocina: #FF6B4A;
+            --cocina-dim: rgba(255, 107, 74, 0.15);
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --text-muted: #52525B;
+            --success: #22C55E;
+            --success-dim: rgba(34, 197, 94, 0.15);
+            --warning: #F59E0B;
+            --warning-dim: rgba(245, 158, 11, 0.15);
+            --danger: #EF4444;
+            --danger-dim: rgba(239, 68, 68, 0.15);
+            --border: #27272A;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left h1 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .header-left h1 span {
+            color: var(--accent);
+        }
+
+        .header-left p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #7C3AED;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .refresh-btn .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .refresh-btn.loading .spinner {
+            display: block;
+        }
+
+        .refresh-btn.loading .icon {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .last-update {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Date Filter */
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .date-filter label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .date-filter input {
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .date-filter input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .quick-dates {
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-date-btn {
+            padding: 8px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-date-btn:hover, .quick-date-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-card .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .stat-card.success .value { color: var(--success); }
+        .stat-card.warning .value { color: var(--warning); }
+        .stat-card.danger .value { color: var(--danger); }
+        .stat-card.piso .value { color: var(--piso); }
+        .stat-card.cocina .value { color: var(--cocina); }
+
+        /* Status Cards */
+        .status-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .branch-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .branch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .branch-card.complete::before {
+            background: var(--success);
+        }
+
+        .branch-card.partial::before {
+            background: var(--warning);
+        }
+
+        .branch-card.pending::before {
+            background: var(--danger);
+        }
+
+        .branch-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .branch-status {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .area-status {
+            padding: 14px;
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+        }
+
+        .area-status .area-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .area-status .area-name.piso { color: var(--piso); }
+        .area-status .area-name.cocina { color: var(--cocina); }
+
+        .area-status .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .area-status .status-badge.complete {
+            background: var(--success-dim);
+            color: var(--success);
+        }
+
+        .area-status .status-badge.pending {
+            background: var(--danger-dim);
+            color: var(--danger);
+        }
+
+        .area-status .time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .area-status .responsible {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Records Table */
+        .records-section {
+            margin-bottom: 32px;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .export-btn {
+            padding: 8px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .export-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-secondary);
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.piso {
+            background: var(--piso-dim);
+            color: var(--piso);
+        }
+
+        .badge.cocina {
+            background: var(--cocina-dim);
+            color: var(--cocina);
+        }
+
+        .badge.complete {
+            background: var(--success-dim);
+            color: var(--success);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 11, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-dates {
+                width: 100%;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Cargando datos...</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Panel de <span>Control</span></h1>
+                <p>Monitoreo de checklists de apertura</p>
+            </div>
+            <div class="header-right">
+                <div class="last-update" id="lastUpdate">Última actualización: --</div>
+                <button class="refresh-btn" onclick="loadData()">
+                    <span class="icon">🔄</span>
+                    <span class="spinner"></span>
+                    Actualizar
+                </button>
+            </div>
+        </header>
+
+        <!-- Date Filter -->
+        <div class="date-filter">
+            <label>Fecha:</label>
+            <input type="date" id="dateFilter" onchange="filterByDate()">
+            <div class="quick-dates">
+                <button class="quick-date-btn active" onclick="setQuickDate('today')">Hoy</button>
+                <button class="quick-date-btn" onclick="setQuickDate('yesterday')">Ayer</button>
+                <button class="quick-date-btn" onclick="setQuickDate('week')">Esta semana</button>
+                <button class="quick-date-btn" onclick="setQuickDate('all')">Todo</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card success">
+                <div class="label">Completados Hoy</div>
+                <div class="value" id="statCompleted">-</div>
+                <div class="subtitle">de 4 esperados</div>
+            </div>
+            <div class="stat-card piso">
+                <div class="label">Piso</div>
+                <div class="value" id="statPiso">-</div>
+                <div class="subtitle">checklists</div>
+            </div>
+            <div class="stat-card cocina">
+                <div class="label">Cocina</div>
+                <div class="value" id="statCocina">-</div>
+                <div class="subtitle">checklists</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Registros</div>
+                <div class="value" id="statTotal">-</div>
+                <div class="subtitle">en el período</div>
+            </div>
+        </div>
+
+        <!-- Status by Branch -->
+        <div class="status-section">
+            <h2 class="section-title">📍 Estado por Sucursal - Hoy</h2>
+            <div class="status-grid" id="branchStatus">
+                <!-- Naco -->
+                <div class="branch-card pending" id="card-naco">
+                    <div class="branch-name">🏪 Naco</div>
+                    <div class="branch-status">
+                        <div class="area-status">
+                            <div class="area-name piso">🍽️ Piso</div>
+                            <div class="status-badge pending" id="naco-piso-badge">⏳ Pendiente</div>
+                            <div class="time" id="naco-piso-time"></div>
+                            <div class="responsible" id="naco-piso-resp"></div>
+                        </div>
+                        <div class="area-status">
+                            <div class="area-name cocina">👨‍🍳 Cocina</div>
+                            <div class="status-badge pending" id="naco-cocina-badge">⏳ Pendiente</div>
+                            <div class="time" id="naco-cocina-time"></div>
+                            <div class="responsible" id="naco-cocina-resp"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Serralles -->
+                <div class="branch-card pending" id="card-serralles">
+                    <div class="branch-name">🏪 Serralles</div>
+                    <div class="branch-status">
+                        <div class="area-status">
+                            <div class="area-name piso">🍽️ Piso</div>
+                            <div class="status-badge pending" id="serralles-piso-badge">⏳ Pendiente</div>
+                            <div class="time" id="serralles-piso-time"></div>
+                            <div class="responsible" id="serralles-piso-resp"></div>
+                        </div>
+                        <div class="area-status">
+                            <div class="area-name cocina">👨‍🍳 Cocina</div>
+                            <div class="status-badge pending" id="serralles-cocina-badge">⏳ Pendiente</div>
+                            <div class="time" id="serralles-cocina-time"></div>
+                            <div class="responsible" id="serralles-cocina-resp"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="records-section">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>📋 Registro de Checklists</h3>
+                    <div class="table-actions">
+                        <button class="export-btn" onclick="exportCSV()">📥 Exportar CSV</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Sucursal</th>
+                            <th>Área</th>
+                            <th>Responsable</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="icon">📭</div>
+                                    <p>No hay registros para mostrar</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Config
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1O6_qOkTq9xk-srJX01OPhCMfP8SV3ELD8OSavgdAogE/gviz/tq?tqx=out:json';
+        
+        let allRecords = [];
+        let filteredRecords = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateFilter').value = today;
+            
+            loadData();
+            
+            // Auto-refresh every 2 minutes
+            setInterval(loadData, 120000);
+        });
+
+        async function loadData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('loading');
+
+            try {
+                const response = await fetch(SHEET_URL);
+                const text = await response.text();
+                
+                // Parse Google Sheets JSON response
+                const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
+                if (!jsonString) throw new Error('Invalid response');
+                
+                const data = JSON.parse(jsonString[1]);
+                
+                // Convert to array of objects
+                allRecords = [];
+                if (data.table && data.table.rows) {
+                    data.table.rows.forEach((row, index) => {
+                        if (index === 0) return; // Skip header if present in data
+                        
+                        const cells = row.c;
+                        if (cells && cells[0]) {
+                            allRecords.push({
+                                fecha: cells[0]?.v || '',
+                                hora: cells[1]?.v || '',
+                                sucursal: cells[2]?.v || '',
+                                area: cells[3]?.v || '',
+                                responsable: cells[4]?.v || '',
+                                estado: cells[5]?.v || ''
+                            });
+                        }
+                    });
+                }
+
+                // Remove header row if it got included
+                allRecords = allRecords.filter(r => r.fecha !== 'Fecha' && r.fecha !== '');
+
+                filterByDate();
+                updateLastUpdate();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Error cargando datos. Verifica que el Sheet esté compartido como "Cualquier persona con el enlace puede ver".');
+            } finally {
+                btn.classList.remove('loading');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        function filterByDate() {
+            const dateInput = document.getElementById('dateFilter').value;
+            const quickBtns = document.querySelectorAll('.quick-date-btn');
+            
+            if (!dateInput) {
+                filteredRecords = [...allRecords];
+            } else {
+                // Format date for comparison
+                const selectedDate = new Date(dateInput + 'T00:00:00');
+                const formattedDate = selectedDate.toLocaleDateString('es-DO');
+                
+                filteredRecords = allRecords.filter(r => {
+                    // Try different date formats
+                    return r.fecha === formattedDate || 
+                           r.fecha === dateInput ||
+                           r.fecha.includes(dateInput.split('-').reverse().join('/'));
+                });
+            }
+
+            updateStats();
+            updateBranchStatus();
+            renderTable();
+        }
+
+        function setQuickDate(period) {
+            const btns = document.querySelectorAll('.quick-date-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const today = new Date();
+            const dateInput = document.getElementById('dateFilter');
+
+            switch(period) {
+                case 'today':
+                    dateInput.value = today.toISOString().split('T')[0];
+                    filterByDate();
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    dateInput.value = yesterday.toISOString().split('T')[0];
+                    filterByDate();
+                    break;
+                case 'week':
+                    const weekAgo = new Date(today);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    filteredRecords = allRecords.filter(r => {
+                        const recordDate = parseDate(r.fecha);
+                        return recordDate >= weekAgo && recordDate <= today;
+                    });
+                    dateInput.value = '';
+                    updateStats();
+                    updateBranchStatus();
+                    renderTable();
+                    break;
+                case 'all':
+                    dateInput.value = '';
+                    filteredRecords = [...allRecords];
+                    updateStats();
+                    updateBranchStatus();
+                    renderTable();
+                    break;
+            }
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return new Date(0);
+            // Handle different formats: DD/MM/YYYY, YYYY-MM-DD, etc.
+            const parts = dateStr.split(/[\/\-]/);
+            if (parts[0].length === 4) {
+                return new Date(parts[0], parts[1] - 1, parts[2]);
+            } else {
+                return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+        }
+
+        function updateStats() {
+            const today = new Date().toLocaleDateString('es-DO');
+            const todayRecords = allRecords.filter(r => r.fecha === today || r.fecha.includes(new Date().toISOString().split('T')[0].split('-').reverse().join('/')));
+            
+            const completedToday = todayRecords.length;
+            const pisoCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'PISO').length;
+            const cocinaCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'COCINA').length;
+
+            document.getElementById('statCompleted').textContent = completedToday;
+            document.getElementById('statPiso').textContent = pisoCount;
+            document.getElementById('statCocina').textContent = cocinaCount;
+            document.getElementById('statTotal').textContent = filteredRecords.length;
+
+            // Update card color based on completion
+            const completedCard = document.querySelector('.stat-card.success');
+            if (completedToday >= 4) {
+                completedCard.classList.remove('warning', 'danger');
+                completedCard.classList.add('success');
+            } else if (completedToday >= 2) {
+                completedCard.classList.remove('success', 'danger');
+                completedCard.classList.add('warning');
+            } else {
+                completedCard.classList.remove('success', 'warning');
+                completedCard.classList.add('danger');
+            }
+        }
+
+        function updateBranchStatus() {
+            const today = new Date().toLocaleDateString('es-DO');
+            const todayRecords = allRecords.filter(r => {
+                return r.fecha === today || 
+                       r.fecha.includes(new Date().toISOString().split('T')[0].split('-').reverse().join('/'));
+            });
+
+            const branches = ['Naco', 'Serralles'];
+            const areas = ['PISO', 'COCINA'];
+
+            branches.forEach(branch => {
+                let completedCount = 0;
+                
+                areas.forEach(area => {
+                    const record = todayRecords.find(r => 
+                        r.sucursal?.toLowerCase() === branch.toLowerCase() && 
+                        r.area?.toUpperCase() === area
+                    );
+
+                    const badgeEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-badge`);
+                    const timeEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-time`);
+                    const respEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-resp`);
+
+                    if (record) {
+                        badgeEl.className = 'status-badge complete';
+                        badgeEl.textContent = '✓ Completado';
+                        timeEl.textContent = `⏰ ${record.hora}`;
+                        respEl.textContent = `👤 ${record.responsable}`;
+                        completedCount++;
+                    } else {
+                        badgeEl.className = 'status-badge pending';
+                        badgeEl.textContent = '⏳ Pendiente';
+                        timeEl.textContent = '';
+                        respEl.textContent = '';
+                    }
+                });
+
+                // Update branch card status
+                const cardEl = document.getElementById(`card-${branch.toLowerCase()}`);
+                cardEl.classList.remove('complete', 'partial', 'pending');
+                if (completedCount === 2) {
+                    cardEl.classList.add('complete');
+                } else if (completedCount === 1) {
+                    cardEl.classList.add('partial');
+                } else {
+                    cardEl.classList.add('pending');
+                }
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('recordsBody');
+
+            if (filteredRecords.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="icon">📭</div>
+                                <p>No hay registros para mostrar</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort by date and time (newest first)
+            const sorted = [...filteredRecords].sort((a, b) => {
+                const dateA = parseDate(a.fecha);
+                const dateB = parseDate(b.fecha);
+                if (dateB - dateA !== 0) return dateB - dateA;
+                return (b.hora || '').localeCompare(a.hora || '');
+            });
+
+            tbody.innerHTML = sorted.map(record => `
+                <tr>
+                    <td>${record.fecha}</td>
+                    <td>${record.hora}</td>
+                    <td>${record.sucursal}</td>
+                    <td><span class="badge ${record.area?.toLowerCase()}">${record.area}</span></td>
+                    <td>${record.responsable}</td>
+                    <td><span class="badge complete">${record.estado}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeStr}`;
+        }
+
+        function exportCSV() {
+            if (filteredRecords.length === 0) {
+                alert('No hay registros para exportar');
+                return;
+            }
+
+            let csv = 'Fecha,Hora,Sucursal,Área,Responsable,Estado\n';
+            filteredRecords.forEach(r => {
+                csv += `"${r.fecha}","${r.hora}","${r.sucursal}","${r.area}","${r.responsable}","${r.estado}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `checklists-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
