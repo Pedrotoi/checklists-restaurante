@@ -1,964 +1,463 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Control | Checklists Restaurante</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0A0A0B;
-            --bg-secondary: #121214;
-            --bg-card: #18181B;
-            --bg-hover: #1F1F23;
-            --accent: #8B5CF6;
-            --accent-dim: rgba(139, 92, 246, 0.15);
-            --accent-glow: rgba(139, 92, 246, 0.3);
-            --piso: #E8C547;
-            --piso-dim: rgba(232, 197, 71, 0.15);
-            --cocina: #FF6B4A;
-            --cocina-dim: rgba(255, 107, 74, 0.15);
-            --text-primary: #FAFAFA;
-            --text-secondary: #A1A1AA;
-            --text-muted: #52525B;
-            --success: #22C55E;
-            --success-dim: rgba(34, 197, 94, 0.15);
-            --warning: #F59E0B;
-            --warning-dim: rgba(245, 158, 11, 0.15);
-            --danger: #EF4444;
-            --danger-dim: rgba(239, 68, 68, 0.15);
-            --border: #27272A;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px 20px;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .header-left h1 {
-            font-family: 'Instrument Serif', Georgia, serif;
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 4px;
-        }
-
-        .header-left h1 span {
-            color: var(--accent);
-        }
-
-        .header-left p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .refresh-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--accent);
-            border: none;
-            border-radius: var(--radius-md);
-            color: white;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .refresh-btn:hover {
-            background: #7C3AED;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--accent-glow);
-        }
-
-        .refresh-btn.loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .refresh-btn .spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .refresh-btn.loading .spinner {
-            display: block;
-        }
-
-        .refresh-btn.loading .icon {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .last-update {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* Date Filter */
-        .date-filter {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-
-        .date-filter label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .date-filter input {
-            padding: 10px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-
-        .date-filter input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .quick-dates {
-            display: flex;
-            gap: 8px;
-        }
-
-        .quick-date-btn {
-            padding: 8px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .quick-date-btn:hover, .quick-date-btn.active {
-            background: var(--accent-dim);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            transition: all 0.2s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .stat-card .label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .stat-card .subtitle {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        .stat-card.success .value { color: var(--success); }
-        .stat-card.warning .value { color: var(--warning); }
-        .stat-card.danger .value { color: var(--danger); }
-        .stat-card.piso .value { color: var(--piso); }
-        .stat-card.cocina .value { color: var(--cocina); }
-
-        /* Status Cards */
-        .status-section {
-            margin-bottom: 32px;
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .branch-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .branch-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-        }
-
-        .branch-card.complete::before {
-            background: var(--success);
-        }
-
-        .branch-card.partial::before {
-            background: var(--warning);
-        }
-
-        .branch-card.pending::before {
-            background: var(--danger);
-        }
-
-        .branch-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .branch-status {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .area-status {
-            padding: 14px;
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-        }
-
-        .area-status .area-name {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .area-status .area-name.piso { color: var(--piso); }
-        .area-status .area-name.cocina { color: var(--cocina); }
-
-        .area-status .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .area-status .status-badge.complete {
-            background: var(--success-dim);
-            color: var(--success);
-        }
-
-        .area-status .status-badge.pending {
-            background: var(--danger-dim);
-            color: var(--danger);
-        }
-
-        .area-status .time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
-        .area-status .responsible {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        /* Records Table */
-        .records-section {
-            margin-bottom: 32px;
-        }
-
-        .table-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table-header h3 {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .export-btn {
-            padding: 8px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .export-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: var(--bg-secondary);
-        }
-
-        th {
-            text-align: left;
-            padding: 14px 20px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        td {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-
-        tbody tr:hover {
-            background: var(--bg-hover);
-        }
-
-        .badge {
-            display: inline-flex;
-            padding: 4px 10px;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge.piso {
-            background: var(--piso-dim);
-            color: var(--piso);
-        }
-
-        .badge.cocina {
-            background: var(--cocina-dim);
-            color: var(--cocina);
-        }
-
-        .badge.complete {
-            background: var(--success-dim);
-            color: var(--success);
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 0.95rem;
-        }
-
-        /* Loading */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10, 10, 11, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .loading-content {
-            text-align: center;
-        }
-
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .status-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.8rem;
-            }
-
-            th, td {
-                padding: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .quick-dates {
-                width: 100%;
-                overflow-x: auto;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Control | Checklists Restaurante</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #0f0e17 0%, #1a1825 100%);
+    color: #e5e7eb;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+  .header h1 { font-size: 32px; font-weight: 700; }
+  .header h1 .accent { color: #a78bfa; }
+  .header .sub { color: #9ca3af; font-size: 14px; margin-top: 4px; }
+  .header-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .last-update { color: #9ca3af; font-size: 13px; }
+  .refresh-btn {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 14px;
+    font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(139, 92, 246, .35); }
+
+  hr.div { border: none; border-top: 1px solid #2a2937; margin: 0 0 24px; }
+
+  .date-filter { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .date-filter label { color: #9ca3af; font-size: 14px; }
+  .date-filter input[type="date"] {
+    background: #1f1d2e; color: #e5e7eb; border: 1px solid #2a2937;
+    padding: 8px 12px; border-radius: 8px; font-size: 14px; font-family: inherit;
+    color-scheme: dark;
+  }
+  .quick-dates { display: flex; gap: 8px; flex-wrap: wrap; }
+  .quick-btn {
+    background: #1f1d2e; color: #d1d5db; border: 1px solid #2a2937;
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: background .15s, border-color .15s;
+  }
+  .quick-btn:hover { background: #2a2840; }
+  .quick-btn.active { background: linear-gradient(135deg, #8b5cf6, #6366f1); border-color: transparent; color: #fff; font-weight: 600; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stat-card {
+    background: rgba(31, 29, 46, 0.6); border: 1px solid #2a2937; border-radius: 14px; padding: 20px;
+    transition: transform .15s, border-color .15s;
+  }
+  .stat-card:hover { transform: translateY(-2px); border-color: #3a3850; }
+  .stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; margin-bottom: 8px; }
+  .stat-card .value { font-size: 38px; font-weight: 700; line-height: 1; }
+  .stat-card .sub { font-size: 13px; color: #9ca3af; margin-top: 8px; }
+  .stat-card.apertura .value { color: #10b981; }
+  .stat-card.cierre .value { color: #a78bfa; }
+  .stat-card.late .value { color: #f59e0b; }
+  .stat-card.total .value { color: #60a5fa; }
+  .progress { height: 6px; background: #2a2840; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+  .progress > div { height: 100%; border-radius: 999px; transition: width .3s; }
+  .progress.apertura > div { background: #10b981; }
+  .progress.cierre > div { background: #a78bfa; }
+
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #f3f4f6; }
+  .section-title small { font-weight: normal; color: #9ca3af; font-size: 13px; margin-left: 8px; }
+
+  .branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .branch {
+    background: rgba(31, 29, 46, 0.6); border: 1px solid #2a2937; border-radius: 14px;
+    padding: 20px; border-left: 4px solid #8b5cf6;
+  }
+  .branch h3 { font-size: 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .area-block { padding: 12px; background: rgba(15, 14, 23, 0.4); border-radius: 10px; margin-bottom: 10px; }
+  .area-block:last-child { margin-bottom: 0; }
+  .area-header { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #f3f4f6; }
+  .area-line { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; }
+  .area-line .typeName { color: #9ca3af; font-size: 12px; }
+  .area-line .meta { color: #9ca3af; font-size: 11px; }
+
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+  .pill.ok { background: rgba(16, 185, 129, .15); color: #34d399; border: 1px solid rgba(16, 185, 129, .3); }
+  .pill.warn { background: rgba(245, 158, 11, .15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, .3); }
+  .pill.bad { background: rgba(239, 68, 68, .15); color: #f87171; border: 1px solid rgba(239, 68, 68, .3); }
+  .pill.neutral { background: rgba(156, 163, 175, .15); color: #d1d5db; border: 1px solid rgba(156, 163, 175, .25); }
+  .pill.cierre { background: rgba(167, 139, 250, .15); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, .3); }
+
+  .table-card {
+    background: rgba(31, 29, 46, 0.6); border: 1px solid #2a2937; border-radius: 14px;
+    padding: 20px; overflow: hidden;
+  }
+  .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+  .export-btn {
+    background: #1f1d2e; color: #e5e7eb; border: 1px solid #2a2937;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit;
+  }
+  .export-btn:hover { background: #2a2840; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #16151f; color: #9ca3af; padding: 10px 12px; text-align: left;
+       font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  td { padding: 10px 12px; border-bottom: 1px solid #2a2937; color: #d1d5db; }
+  tr:hover td { background: rgba(139, 92, 246, .05); }
+  .empty-row { text-align: center; padding: 32px !important; color: #6b7280; }
+
+  .loading { text-align: center; padding: 60px; color: #9ca3af; }
+  .err-banner { background: rgba(239, 68, 68, .1); border: 1px solid rgba(239, 68, 68, .3); color: #fca5a5; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; }
+  .legend { font-size: 12px; color: #9ca3af; margin: 8px 0 18px; }
+
+  /* Heatmap */
+  .heatmap-wrap { background: rgba(31, 29, 46, 0.6); border: 1px solid #2a2937; border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+  .heatmap { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; align-items: end; height: 110px; margin-top: 10px; }
+  .hm-bar { display: flex; flex-direction: column; align-items: center; height: 100%; }
+  .hm-bar .seg { width: 80%; border-radius: 3px; transition: opacity .15s; }
+  .hm-bar .seg.a { background: #10b981; border-radius: 3px 3px 0 0; }
+  .hm-bar .seg.c { background: #a78bfa; border-radius: 0 0 3px 3px; }
+  .hm-bar .day { font-size: 10px; color: #6b7280; margin-top: 4px; }
+  .legend-row { display: flex; gap: 14px; margin-top: 10px; font-size: 11px; color: #9ca3af; }
+  .legend-row span span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+</style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p>Cargando datos...</p>
-        </div>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Panel de <span class="accent">Control</span></h1>
+      <div class="sub">Monitoreo de checklists de apertura y cierre</div>
     </div>
-
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <h1>Panel de <span>Control</span></h1>
-                <p>Monitoreo de checklists de apertura</p>
-            </div>
-            <div class="header-right">
-                <div class="last-update" id="lastUpdate">Última actualización: --</div>
-                <button class="refresh-btn" onclick="loadData()">
-                    <span class="icon">🔄</span>
-                    <span class="spinner"></span>
-                    Actualizar
-                </button>
-            </div>
-        </header>
-
-        <!-- Date Filter -->
-        <div class="date-filter">
-            <label>Fecha:</label>
-            <input type="date" id="dateFilter" onchange="filterByDate()">
-            <div class="quick-dates">
-                <button class="quick-date-btn active" onclick="setQuickDate('today')">Hoy</button>
-                <button class="quick-date-btn" onclick="setQuickDate('yesterday')">Ayer</button>
-                <button class="quick-date-btn" onclick="setQuickDate('week')">Esta semana</button>
-                <button class="quick-date-btn" onclick="setQuickDate('all')">Todo</button>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card success">
-                <div class="label">Completados Hoy</div>
-                <div class="value" id="statCompleted">-</div>
-                <div class="subtitle">de 4 esperados</div>
-            </div>
-            <div class="stat-card piso">
-                <div class="label">Piso</div>
-                <div class="value" id="statPiso">-</div>
-                <div class="subtitle">checklists</div>
-            </div>
-            <div class="stat-card cocina">
-                <div class="label">Cocina</div>
-                <div class="value" id="statCocina">-</div>
-                <div class="subtitle">checklists</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Total Registros</div>
-                <div class="value" id="statTotal">-</div>
-                <div class="subtitle">en el período</div>
-            </div>
-        </div>
-
-        <!-- Status by Branch -->
-        <div class="status-section">
-            <h2 class="section-title">📍 Estado por Sucursal - Hoy</h2>
-            <div class="status-grid" id="branchStatus">
-                <!-- Naco -->
-                <div class="branch-card pending" id="card-naco">
-                    <div class="branch-name">🏪 Naco</div>
-                    <div class="branch-status">
-                        <div class="area-status">
-                            <div class="area-name piso">🍽️ Piso</div>
-                            <div class="status-badge pending" id="naco-piso-badge">⏳ Pendiente</div>
-                            <div class="time" id="naco-piso-time"></div>
-                            <div class="responsible" id="naco-piso-resp"></div>
-                        </div>
-                        <div class="area-status">
-                            <div class="area-name cocina">👨‍🍳 Cocina</div>
-                            <div class="status-badge pending" id="naco-cocina-badge">⏳ Pendiente</div>
-                            <div class="time" id="naco-cocina-time"></div>
-                            <div class="responsible" id="naco-cocina-resp"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Serralles -->
-                <div class="branch-card pending" id="card-serralles">
-                    <div class="branch-name">🏪 Serralles</div>
-                    <div class="branch-status">
-                        <div class="area-status">
-                            <div class="area-name piso">🍽️ Piso</div>
-                            <div class="status-badge pending" id="serralles-piso-badge">⏳ Pendiente</div>
-                            <div class="time" id="serralles-piso-time"></div>
-                            <div class="responsible" id="serralles-piso-resp"></div>
-                        </div>
-                        <div class="area-status">
-                            <div class="area-name cocina">👨‍🍳 Cocina</div>
-                            <div class="status-badge pending" id="serralles-cocina-badge">⏳ Pendiente</div>
-                            <div class="time" id="serralles-cocina-time"></div>
-                            <div class="responsible" id="serralles-cocina-resp"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Records Table -->
-        <div class="records-section">
-            <div class="table-container">
-                <div class="table-header">
-                    <h3>📋 Registro de Checklists</h3>
-                    <div class="table-actions">
-                        <button class="export-btn" onclick="exportCSV()">📥 Exportar CSV</button>
-                    </div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Sucursal</th>
-                            <th>Área</th>
-                            <th>Responsable</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recordsBody">
-                        <tr>
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <div class="icon">📭</div>
-                                    <p>No hay registros para mostrar</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="header-right">
+      <div class="last-update" id="lastUpdate">Última actualización: --</div>
+      <button class="refresh-btn" id="refreshBtn">🔄 Actualizar</button>
     </div>
+  </div>
+  <hr class="div">
 
-    <script>
-        // Config
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1O6_qOkTq9xk-srJX01OPhCMfP8SV3ELD8OSavgdAogE/gviz/tq?tqx=out:json';
-        
-        let allRecords = [];
-        let filteredRecords = [];
+  <div id="errorBanner"></div>
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set today's date
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateFilter').value = today;
-            
-            loadData();
-            
-            // Auto-refresh every 2 minutes
-            setInterval(loadData, 120000);
-        });
+  <div class="date-filter">
+    <label>Fecha:</label>
+    <input type="date" id="dateInput">
+    <div class="quick-dates">
+      <button class="quick-btn active" data-q="today">Hoy</button>
+      <button class="quick-btn" data-q="yesterday">Ayer</button>
+      <button class="quick-btn" data-q="week">Esta semana</button>
+      <button class="quick-btn" data-q="all">Todo</button>
+    </div>
+  </div>
 
-        async function loadData() {
-            const btn = document.querySelector('.refresh-btn');
-            btn.classList.add('loading');
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card apertura">
+      <div class="label">Aperturas hoy</div>
+      <div class="value" id="statApertura">--</div>
+      <div class="progress apertura"><div id="apertureBar" style="width:0%"></div></div>
+      <div class="sub" id="statAperturaSub">de 4 esperados</div>
+    </div>
+    <div class="stat-card cierre">
+      <div class="label">Cierres anoche (cocina)</div>
+      <div class="value" id="statCierre">--</div>
+      <div class="progress cierre"><div id="cierreBar" style="width:0%"></div></div>
+      <div class="sub" id="statCierreSub">de 2 esperados</div>
+    </div>
+    <div class="stat-card late">
+      <div class="label">Tardíos hoy (apertura)</div>
+      <div class="value" id="statLate">--</div>
+      <div class="sub">Límite: 7:30 AM</div>
+    </div>
+    <div class="stat-card total">
+      <div class="label">Total 7 días</div>
+      <div class="value" id="statTotal">--</div>
+      <div class="sub" id="statTotalSub">registros</div>
+    </div>
+  </div>
 
-            try {
-                const response = await fetch(SHEET_URL);
-                const text = await response.text();
-                
-                // Parse Google Sheets JSON response
-                const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
-                if (!jsonString) throw new Error('Invalid response');
-                
-                const data = JSON.parse(jsonString[1]);
-                
-                // Convert to array of objects
-                allRecords = [];
-                if (data.table && data.table.rows) {
-                    data.table.rows.forEach((row, index) => {
-                        const cells = row.c;
-                        if (cells && cells[0] && cells[0].v) {
-                            const fecha = cells[0]?.v || '';
-                            // Skip header row
-                            if (fecha === 'Fecha') return;
-                            
-                            allRecords.push({
-                                fecha: cells[0]?.f || cells[0]?.v || '',
-                                hora: cells[1]?.f || cells[1]?.v || '',
-                                sucursal: cells[2]?.v || '',
-                                area: cells[3]?.v || '',
-                                responsable: cells[4]?.v || '',
-                                estado: cells[5]?.v || ''
-                            });
-                        }
-                    });
-                }
+  <div class="section-title">📍 Estado por sucursal <small>Apertura de hoy · Cierre de anoche</small></div>
+  <div class="branches" id="branches"></div>
 
-                console.log('Records loaded:', allRecords);
-                filterByDate();
-                updateLastUpdate();
+  <div class="section-title">📈 Cumplimiento — últimos 14 días</div>
+  <div class="heatmap-wrap">
+    <div class="heatmap" id="heatmap"></div>
+    <div class="legend-row">
+      <span><span style="background:#10b981"></span> Apertura</span>
+      <span><span style="background:#a78bfa"></span> Cierre</span>
+    </div>
+  </div>
 
-            } catch (error) {
-                console.error('Error loading data:', error);
-                alert('Error cargando datos. Verifica que el Sheet esté compartido como "Cualquier persona con el enlace puede ver".');
-            } finally {
-                btn.classList.remove('loading');
-                document.getElementById('loadingOverlay').style.display = 'none';
-            }
-        }
+  <div class="section-title">📋 Registros</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="legend" id="filterLabel">Mostrando: hoy</div>
+      <button class="export-btn" id="exportBtn">📥 Exportar CSV</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Hora</th><th>Sucursal</th><th>Área</th><th>Tipo</th><th>Responsable</th><th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="recordsBody">
+          <tr><td colspan="7" class="empty-row">Cargando datos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-        function filterByDate() {
-            const dateInput = document.getElementById('dateFilter').value;
-            
-            if (!dateInput) {
-                filteredRecords = [...allRecords];
-            } else {
-                // Parse selected date
-                const [year, month, day] = dateInput.split('-');
-                const selectedFormatted = `${parseInt(day)}/${parseInt(month)}/${year}`;
-                
-                filteredRecords = allRecords.filter(r => {
-                    // Compare with different possible formats
-                    return r.fecha === selectedFormatted || 
-                           r.fecha === `${day}/${month}/${year}` ||
-                           r.fecha === dateInput ||
-                           r.fecha.includes(`${parseInt(day)}/${parseInt(month)}/${year}`);
-                });
-            }
+<script>
+const SHEET_ID = "1O6_qOkTq9xk-srJX01OPhCMfP8SV3ELD8OSavgdAogE";
+const GVIZ_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json";
+const EXPECTED_APERTURA = [
+  { sucursal: "Naco", area: "PISO" },
+  { sucursal: "Naco", area: "COCINA" },
+  { sucursal: "Serralles", area: "PISO" },
+  { sucursal: "Serralles", area: "COCINA" },
+];
+// Cierres esperados: solo cocina por ahora (cierre piso aún no tiene form)
+const EXPECTED_CIERRE = [
+  { sucursal: "Naco", area: "COCINA" },
+  { sucursal: "Serralles", area: "COCINA" },
+];
+const LIMITE_APERTURA_MIN = 7*60 + 30; // 7:30 AM
 
-            console.log('Filtered records:', filteredRecords);
-            updateStats();
-            updateBranchStatus();
-            renderTable();
-        }
+let allRecords = [];
+let currentFilter = "today";
 
-        function setQuickDate(period) {
-            const btns = document.querySelectorAll('.quick-date-btn');
-            btns.forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+function parseGvizDate(s) {
+  if (!s || !s.startsWith("Date(")) return null;
+  const m = s.match(/Date\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!m) return null;
+  return new Date(+m[1], +m[2], +m[3]);
+}
+function parseHora(s) {
+  if (!s) return null;
+  const m = s.match(/(\d{1,2}):(\d{2})\s*([ap])\.?\s*m\.?/i);
+  if (!m) return null;
+  let h = +m[1], mi = +m[2];
+  const pm = m[3].toLowerCase() === "p";
+  if (pm && h !== 12) h += 12;
+  if (!pm && h === 12) h = 0;
+  return { h, m: mi, total: h*60 + mi, str: s };
+}
+function sameDay(a, b) { return a && b && a.toDateString() === b.toDateString(); }
+function fmtDate(d) { return d ? d.toLocaleDateString("es-DO", { day: "2-digit", month: "2-digit", year: "numeric" }) : ""; }
+function normalizeArea(a) {
+  const u = (a || "").toUpperCase();
+  if (u.includes("PISO")) return "PISO";
+  if (u.includes("COCINA")) return "COCINA";
+  return a || "";
+}
+function classifyTipo(rawTipo, rawArea) {
+  const t = (rawTipo || "").trim().toLowerCase();
+  if (t === "apertura") return "apertura";
+  if (t === "cierre") return "cierre";
+  if ((rawArea || "").toUpperCase().includes("CIERRE")) return "cierre";
+  return "apertura";
+}
 
-            const today = new Date();
-            const dateInput = document.getElementById('dateFilter');
+async function loadData() {
+  document.getElementById("errorBanner").innerHTML = "";
+  try {
+    const r = await fetch(GVIZ_URL + "&_=" + Date.now(), { cache: "no-cache" });
+    const t = await r.text();
+    const m = t.match(/setResponse\(([\s\S]*)\);?\s*$/);
+    if (!m) throw new Error("No se pudo parsear la respuesta del Sheet");
+    const obj = JSON.parse(m[1]);
+    const cols = obj.table.cols.map(c => (c.label || c.id).trim());
+    const idx = {
+      fecha: cols.indexOf("Fecha"),
+      hora: cols.indexOf("Hora"),
+      sucursal: cols.findIndex(c => c.toLowerCase().startsWith("sucursal")),
+      area: cols.indexOf("Area"),
+      responsable: cols.indexOf("Responsable"),
+      estado: cols.indexOf("Estado"),
+      tipo: cols.indexOf("Tipo"),
+    };
+    allRecords = obj.table.rows.map(row => {
+      const c = row.c.map(x => x ? x.v : null);
+      const fecha = parseGvizDate(c[idx.fecha]);
+      const hora = parseHora(c[idx.hora]);
+      const rawArea = (c[idx.area] || "").trim();
+      const rawTipo = idx.tipo >= 0 ? ((c[idx.tipo] || "")+"").trim() : "";
+      return {
+        fecha, hora, horaStr: c[idx.hora] || "",
+        sucursal: (c[idx.sucursal] || "").trim(),
+        area: normalizeArea(rawArea),
+        rawArea,
+        responsable: (c[idx.responsable] || "").trim(),
+        estado: (c[idx.estado] || "").trim(),
+        tipo: classifyTipo(rawTipo, rawArea),
+      };
+    }).filter(r => r.fecha);
+    allRecords.sort((a,b) => (b.fecha - a.fecha) || ((b.hora?.total||0) - (a.hora?.total||0)));
+    document.getElementById("lastUpdate").textContent = "Última actualización: " + new Date().toLocaleString("es-DO");
+    render();
+  } catch (e) {
+    document.getElementById("errorBanner").innerHTML = '<div class="err-banner">Error cargando datos: ' + e.message + '</div>';
+    document.getElementById("recordsBody").innerHTML = '<tr><td colspan="7" class="empty-row">Error al cargar</td></tr>';
+  }
+}
 
-            switch(period) {
-                case 'today':
-                    dateInput.value = today.toISOString().split('T')[0];
-                    filterByDate();
-                    break;
-                case 'yesterday':
-                    const yesterday = new Date(today);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    dateInput.value = yesterday.toISOString().split('T')[0];
-                    filterByDate();
-                    break;
-                case 'week':
-                    const weekAgo = new Date(today);
-                    weekAgo.setDate(weekAgo.getDate() - 7);
-                    filteredRecords = allRecords.filter(r => {
-                        const recordDate = parseDate(r.fecha);
-                        return recordDate >= weekAgo && recordDate <= today;
-                    });
-                    dateInput.value = '';
-                    updateStats();
-                    updateBranchStatus();
-                    renderTable();
-                    break;
-                case 'all':
-                    dateInput.value = '';
-                    filteredRecords = [...allRecords];
-                    updateStats();
-                    updateBranchStatus();
-                    renderTable();
-                    break;
-            }
-        }
+function findRecord(date, sucursal, area, tipo) {
+  return allRecords.find(r =>
+    sameDay(r.fecha, date) &&
+    r.sucursal.toLowerCase() === sucursal.toLowerCase() &&
+    r.area.toLowerCase() === area.toLowerCase() &&
+    r.tipo === tipo
+  );
+}
 
-        function parseDate(dateStr) {
-            if (!dateStr) return new Date(0);
-            // Handle different formats: DD/MM/YYYY, YYYY-MM-DD, etc.
-            const parts = dateStr.split(/[\/\-]/);
-            if (parts[0].length === 4) {
-                return new Date(parts[0], parts[1] - 1, parts[2]);
-            } else {
-                return new Date(parts[2], parts[1] - 1, parts[0]);
-            }
-        }
+function render() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
 
-        function updateStats() {
-            const today = new Date();
-            const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-            
-            const todayRecords = allRecords.filter(r => r.fecha === todayFormatted);
-            
-            const completedToday = todayRecords.length;
-            const pisoCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'COCINA' ? false : r.area?.toUpperCase() === 'PISO').length;
-            const cocinaCount = filteredRecords.filter(r => r.area?.toUpperCase() === 'COCINA').length;
+  // Stats
+  const aperturaToday = allRecords.filter(r => sameDay(r.fecha, today) && r.tipo === "apertura");
+  const cierreYesterday = allRecords.filter(r => sameDay(r.fecha, yesterday) && r.tipo === "cierre");
+  const tardiasHoy = aperturaToday.filter(r => r.hora && r.hora.total > LIMITE_APERTURA_MIN).length;
+  const total7 = allRecords.filter(r => (today - r.fecha)/(1000*60*60*24) < 7).length;
 
-            document.getElementById('statCompleted').textContent = completedToday;
-            document.getElementById('statPiso').textContent = pisoCount;
-            document.getElementById('statCocina').textContent = cocinaCount;
-            document.getElementById('statTotal').textContent = filteredRecords.length;
+  document.getElementById("statApertura").textContent = aperturaToday.length + "/4";
+  document.getElementById("apertureBar").style.width = Math.min(aperturaToday.length/4*100, 100) + "%";
+  document.getElementById("statAperturaSub").textContent = (4 - aperturaToday.length) + " pendientes · " + tardiasHoy + " tardías";
 
-            // Update card color based on completion
-            const completedCard = document.querySelector('.stat-card');
-            completedCard.classList.remove('success', 'warning', 'danger');
-            if (completedToday >= 4) {
-                completedCard.classList.add('success');
-            } else if (completedToday >= 2) {
-                completedCard.classList.add('warning');
-            } else {
-                completedCard.classList.add('danger');
-            }
-        }
+  document.getElementById("statCierre").textContent = cierreYesterday.length + "/2";
+  document.getElementById("cierreBar").style.width = Math.min(cierreYesterday.length/2*100, 100) + "%";
+  document.getElementById("statCierreSub").textContent = (2 - cierreYesterday.length) + " sin reportar";
 
-        function updateBranchStatus() {
-            const today = new Date();
-            const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-            
-            const todayRecords = allRecords.filter(r => r.fecha === todayFormatted);
+  document.getElementById("statLate").textContent = tardiasHoy;
+  document.getElementById("statTotal").textContent = total7;
+  document.getElementById("statTotalSub").textContent = "promedio " + (total7/7).toFixed(1) + "/día";
 
-            console.log('Today formatted:', todayFormatted);
-            console.log('Today records:', todayRecords);
+  // Branches
+  const html = ["Naco", "Serralles"].map(suc => {
+    const blocks = ["PISO", "COCINA"].map(area => {
+      const apertura = findRecord(today, suc, area, "apertura");
+      const cierre = findRecord(yesterday, suc, area, "cierre");
+      const cierreEsperado = EXPECTED_CIERRE.some(e => e.sucursal === suc && e.area === area);
+      return `
+        <div class="area-block">
+          <div class="area-header">${area === "PISO" ? "🍽️" : "👨‍🍳"} ${area}</div>
+          <div class="area-line">
+            <span class="typeName">Apertura hoy</span>
+            ${apertura
+              ? `<span class="pill ${apertura.hora && apertura.hora.total > LIMITE_APERTURA_MIN ? "warn" : "ok"}">${apertura.hora && apertura.hora.total > LIMITE_APERTURA_MIN ? "⚠ TARDE " : "✓ "}${apertura.horaStr} · ${apertura.responsable}</span>`
+              : `<span class="pill bad">⏳ Pendiente</span>`}
+          </div>
+          <div class="area-line">
+            <span class="typeName">Cierre anoche</span>
+            ${cierreEsperado
+              ? (cierre
+                  ? `<span class="pill cierre">✓ ${cierre.horaStr} · ${cierre.responsable}</span>`
+                  : `<span class="pill neutral">⏳ Sin reportar</span>`)
+              : `<span class="pill neutral">— Sin formulario</span>`}
+          </div>
+        </div>`;
+    }).join("");
+    return `<div class="branch"><h3>🏪 ${suc}</h3>${blocks}</div>`;
+  }).join("");
+  document.getElementById("branches").innerHTML = html;
 
-            const branches = ['Naco', 'Serralles'];
-            const areas = ['PISO', 'COCINA'];
+  renderTable();
+  renderHeatmap();
+}
 
-            branches.forEach(branch => {
-                let completedCount = 0;
-                
-                areas.forEach(area => {
-                    const record = todayRecords.find(r => 
-                        r.sucursal?.toLowerCase() === branch.toLowerCase() && 
-                        r.area?.toUpperCase() === area
-                    );
+function renderTable() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+  const weekAgo = new Date(today); weekAgo.setDate(today.getDate()-6);
+  const dateInput = document.getElementById("dateInput");
+  let rows = allRecords;
+  let label = "hoy";
+  if (currentFilter === "today") rows = rows.filter(r => sameDay(r.fecha, today));
+  else if (currentFilter === "yesterday") { rows = rows.filter(r => sameDay(r.fecha, yesterday)); label = "ayer"; }
+  else if (currentFilter === "week") { rows = rows.filter(r => r.fecha >= weekAgo); label = "esta semana"; }
+  else if (currentFilter === "custom" && dateInput.value) {
+    const d = new Date(dateInput.value + "T00:00:00");
+    rows = rows.filter(r => sameDay(r.fecha, d));
+    label = dateInput.value;
+  } else if (currentFilter === "all") label = "todos los registros";
 
-                    const badgeEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-badge`);
-                    const timeEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-time`);
-                    const respEl = document.getElementById(`${branch.toLowerCase()}-${area.toLowerCase()}-resp`);
+  document.getElementById("filterLabel").textContent = "Mostrando: " + label + " (" + rows.length + ")";
 
-                    if (record) {
-                        badgeEl.className = 'status-badge complete';
-                        badgeEl.textContent = '✓ Completado';
-                        timeEl.textContent = `⏰ ${record.hora}`;
-                        respEl.textContent = `👤 ${record.responsable}`;
-                        completedCount++;
-                    } else {
-                        badgeEl.className = 'status-badge pending';
-                        badgeEl.textContent = '⏳ Pendiente';
-                        timeEl.textContent = '';
-                        respEl.textContent = '';
-                    }
-                });
+  if (rows.length === 0) {
+    document.getElementById("recordsBody").innerHTML = '<tr><td colspan="7" class="empty-row">Sin registros en este período</td></tr>';
+    return;
+  }
+  document.getElementById("recordsBody").innerHTML = rows.slice(0, 200).map(r => `
+    <tr>
+      <td>${fmtDate(r.fecha)}</td>
+      <td>${r.horaStr}</td>
+      <td>${r.sucursal}</td>
+      <td>${r.area}</td>
+      <td>${r.tipo === "apertura" ? '<span class="pill ok">🌅 Apertura</span>' : '<span class="pill cierre">🌙 Cierre</span>'}</td>
+      <td>${r.responsable}</td>
+      <td><span class="pill ok">${r.estado}</span></td>
+    </tr>`).join("");
+}
 
-                // Update branch card status
-                const cardEl = document.getElementById(`card-${branch.toLowerCase()}`);
-                cardEl.classList.remove('complete', 'partial', 'pending');
-                if (completedCount === 2) {
-                    cardEl.classList.add('complete');
-                } else if (completedCount === 1) {
-                    cardEl.classList.add('partial');
-                } else {
-                    cardEl.classList.add('pending');
-                }
-            });
-        }
+function renderHeatmap() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const byDay = {};
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    byDay[d.toISOString().slice(0,10)] = { d, a: 0, c: 0 };
+  }
+  allRecords.forEach(r => {
+    const key = r.fecha.toISOString().slice(0,10);
+    if (byDay[key]) {
+      if (r.tipo === "apertura") byDay[key].a++;
+      else if (r.tipo === "cierre") byDay[key].c++;
+    }
+  });
+  const maxA = 4, maxC = 4;
+  document.getElementById("heatmap").innerHTML = Object.values(byDay).map(b => {
+    const hA = (b.a/maxA)*60, hC = (b.c/maxC)*40;
+    return `<div class="hm-bar">
+      <div class="seg a" title="Apertura: ${b.a}/4" style="height:${hA}px;min-height:${b.a>0?2:0}px"></div>
+      <div class="seg c" title="Cierre: ${b.c}/2" style="height:${hC}px;min-height:${b.c>0?2:0}px"></div>
+      <div class="day">${b.d.getDate()}</div>
+    </div>`;
+  }).join("");
+}
 
-        function renderTable() {
-            const tbody = document.getElementById('recordsBody');
+function exportCSV() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let rows = allRecords;
+  if (currentFilter === "today") rows = rows.filter(r => sameDay(r.fecha, today));
+  else if (currentFilter === "yesterday") { const y = new Date(today); y.setDate(today.getDate()-1); rows = rows.filter(r => sameDay(r.fecha, y)); }
+  else if (currentFilter === "week") { const w = new Date(today); w.setDate(today.getDate()-6); rows = rows.filter(r => r.fecha >= w); }
+  const header = "Fecha,Hora,Sucursal,Area,Tipo,Responsable,Estado\n";
+  const body = rows.map(r => [fmtDate(r.fecha), r.horaStr, r.sucursal, r.area, r.tipo, r.responsable, r.estado]
+    .map(v => `"${(v||"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["﻿" + header + body], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "checklists_" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+}
 
-            if (filteredRecords.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <div class="icon">📭</div>
-                                <p>No hay registros para mostrar</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+document.getElementById("refreshBtn").addEventListener("click", loadData);
+document.getElementById("exportBtn").addEventListener("click", exportCSV);
+document.querySelectorAll(".quick-btn").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".quick-btn").forEach(x => x.classList.remove("active"));
+  b.classList.add("active");
+  currentFilter = b.dataset.q;
+  document.getElementById("dateInput").value = "";
+  renderTable();
+}));
+document.getElementById("dateInput").addEventListener("change", () => {
+  document.querySelectorAll(".quick-btn").forEach(x => x.classList.remove("active"));
+  currentFilter = "custom";
+  renderTable();
+});
 
-            // Sort by date and time (newest first)
-            const sorted = [...filteredRecords].sort((a, b) => {
-                const dateA = parseDate(a.fecha);
-                const dateB = parseDate(b.fecha);
-                if (dateB - dateA !== 0) return dateB - dateA;
-                return (b.hora || '').localeCompare(a.hora || '');
-            });
-
-            tbody.innerHTML = sorted.map(record => `
-                <tr>
-                    <td>${record.fecha}</td>
-                    <td>${record.hora}</td>
-                    <td>${record.sucursal}</td>
-                    <td><span class="badge ${record.area?.toLowerCase()}">${record.area}</span></td>
-                    <td>${record.responsable}</td>
-                    <td><span class="badge complete">${record.estado}</span></td>
-                </tr>
-            `).join('');
-        }
-
-        function updateLastUpdate() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeStr}`;
-        }
-
-        function exportCSV() {
-            if (filteredRecords.length === 0) {
-                alert('No hay registros para exportar');
-                return;
-            }
-
-            let csv = 'Fecha,Hora,Sucursal,Área,Responsable,Estado\n';
-            filteredRecords.forEach(r => {
-                csv += `"${r.fecha}","${r.hora}","${r.sucursal}","${r.area}","${r.responsable}","${r.estado}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `checklists-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-    </script>
+// Auto-refresh cada 2 minutos
+loadData();
+setInterval(loadData, 120000);
+</script>
 </body>
 </html>
