@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Cocina | Apertura</title>
+    <title>Checklist Piso | Apertura</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,9 +11,9 @@
             --bg-secondary: #161616;
             --bg-card: #1A1A1A;
             --bg-hover: #242424;
-            --accent: #FF6B4A;
-            --accent-dim: rgba(255, 107, 74, 0.15);
-            --accent-glow: rgba(255, 107, 74, 0.3);
+            --accent: #E8C547;
+            --accent-dim: rgba(232, 197, 71, 0.15);
+            --accent-glow: rgba(232, 197, 71, 0.3);
             --text-primary: #FAFAFA;
             --text-secondary: #888888;
             --text-muted: #555555;
@@ -175,7 +175,7 @@
             border-radius: 100px;
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 0%;
-            background: linear-gradient(90deg, var(--accent), #FF8A6F);
+            background: linear-gradient(90deg, var(--accent), #F0D76A);
         }
 
         /* Timer Alert */
@@ -378,7 +378,7 @@
             justify-content: center;
             gap: 10px;
             background: var(--accent);
-            color: white;
+            color: var(--bg-primary);
         }
 
         .submit-btn:disabled {
@@ -388,7 +388,7 @@
         }
 
         .submit-btn:not(:disabled):hover {
-            background: #FF8A6F;
+            background: #F0D76A;
             transform: translateY(-2px);
             box-shadow: 0 8px 24px var(--accent-glow);
         }
@@ -590,8 +590,8 @@
         <!-- Header -->
         <header class="header">
             <div class="header-badge">
-                <span>👨‍🍳</span>
-                <span>Personal de Cocina</span>
+                <span>🍽️</span>
+                <span>Personal de Piso</span>
             </div>
             <h1>Checklist de <span>Apertura</span></h1>
             <div class="date-display" id="currentDate"></div>
@@ -627,7 +627,7 @@
         <div class="timer-alert" id="timerAlert">
             <div class="timer-icon">⏰</div>
             <div class="timer-content">
-                <div class="timer-label">Hora límite: 7:15 AM</div>
+                <div class="timer-label">Hora límite: 7:30 AM</div>
                 <div class="timer-value" id="timerValue">--:--</div>
             </div>
         </div>
@@ -636,19 +636,19 @@
         <div class="progress-container">
             <div class="progress-header">
                 <span class="progress-label">Progreso</span>
-                <span class="progress-count" id="progressText">0 de 9 tareas</span>
+                <span class="progress-count" id="progressText">0 de 14 tareas</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
         </div>
 
-        <!-- Preparación inicial -->
+        <!-- Encendido y climatización -->
         <div class="category">
             <div class="category-header">
-                <div class="category-icon">🥐</div>
-                <span class="category-title">Preparación inicial</span>
-                <span class="category-count" id="cat-prep">0/5</span>
+                <div class="category-icon">💡</div>
+                <span class="category-title">Encendido y climatización</span>
+                <span class="category-count" id="cat-setup">0/4</span>
             </div>
             <div class="task-list">
                 <div class="task-item" data-task="1" onclick="toggleTask(this)">
@@ -656,7 +656,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Sacar 10 croissants para dejarlos fermentar</div>
+                        <div class="task-text">Encender las luces</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -665,7 +665,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Encender tablet de pedidos La Linda</div>
+                        <div class="task-text">Encender 1 aire del salón</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -674,7 +674,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Encender tablet de pedidos Bierburger</div>
+                        <div class="task-text">Encender 1 aire/abanico de terraza</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -683,36 +683,36 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Encender horno</div>
-                        <div class="task-time"></div>
-                    </div>
-                </div>
-                <div class="task-item" data-task="5" onclick="toggleTask(this)">
-                    <div class="task-checkbox">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    </div>
-                    <div class="task-content">
-                        <div class="task-text">Encender extractor</div>
+                        <div class="task-text">Encender música en ambos espacios (validar playlists correspondientes)</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Inventario y comunicación -->
+        <!-- Limpieza y organización -->
         <div class="category">
             <div class="category-header">
-                <div class="category-icon">📋</div>
-                <span class="category-title">Inventario y comunicación</span>
-                <span class="category-count" id="cat-inventory">0/2</span>
+                <div class="category-icon">🧹</div>
+                <span class="category-title">Limpieza y organización</span>
+                <span class="category-count" id="cat-cleaning">0/5</span>
             </div>
             <div class="task-list">
+                <div class="task-item" data-task="5" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Limpiar mesas y pisos de salón y terraza</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
                 <div class="task-item" data-task="6" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Revisar inventario de productos más vendidos y notificar a piso disponibilidad</div>
+                        <div class="task-text">Organizar servilleteros y azucareros</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -721,27 +721,16 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Notificar a supervisor productos faltantes o de baja disponibilidad</div>
+                        <div class="task-text">Organizar la cristalería</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Higiene y presentación -->
-        <div class="category">
-            <div class="category-header">
-                <div class="category-icon">👨‍🍳</div>
-                <span class="category-title">Higiene y presentación</span>
-                <span class="category-count" id="cat-personal">0/2</span>
-            </div>
-            <div class="task-list">
                 <div class="task-item" data-task="8" onclick="toggleTask(this)">
                     <div class="task-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Limpiar utensilios a utilizar a primera hora</div>
+                        <div class="task-text">Rellenar hielo</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -750,7 +739,63 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
                     <div class="task-content">
-                        <div class="task-text">Colocar chaqueta/uniforme/gorro antes de empezar a cocinar</div>
+                        <div class="task-text">Revisar baño limpio, colocar papel para manos y rellenar jabón</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preparación y comunicación -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">☕</div>
+                <span class="category-title">Preparación y comunicación</span>
+                <span class="category-count" id="cat-prep">0/5</span>
+            </div>
+            <div class="task-list">
+                <div class="task-item" data-task="10" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Hacer check in en Pedidos Ya</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="11" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Encender máquina de café</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="12" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Consultar con cocina disponibilidad del menú y notificar a supervisor productos no disponibles</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="13" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Estar peinada y arreglada lista para recibir clientes</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="14" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Dejar conectadas cargando las tablets y ambos Verifone hasta estar al 100%</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -794,9 +839,9 @@
     <script>
         // Constants
         const DEADLINE_HOUR = 7;
-        const DEADLINE_MINUTE = 15;
-        const TOTAL_TASKS = 9;
-        const STORAGE_KEY = 'checklist-cocina';
+        const DEADLINE_MINUTE = 30;
+        const TOTAL_TASKS = 14;
+        const STORAGE_KEY = 'checklist-piso';
 
         // State
         const state = {
@@ -853,7 +898,7 @@
             }
 
             // Restore config
-            const config = localStorage.getItem('cocina-config');
+            const config = localStorage.getItem('piso-config');
             if (config) {
                 const configData = JSON.parse(config);
                 document.getElementById('responsibleName').value = configData.name || '';
@@ -868,7 +913,7 @@
                 history: state.history
             }));
 
-            localStorage.setItem('cocina-config', JSON.stringify({
+            localStorage.setItem('piso-config', JSON.stringify({
                 name: document.getElementById('responsibleName').value,
                 branch: document.getElementById('branch').value
             }));
@@ -906,13 +951,13 @@
             document.getElementById('progressText').textContent = `${completed} de ${TOTAL_TASKS} tareas`;
 
             // Update category counts
-            const prep = ['1', '2', '3', '4', '5'].filter(t => state.tasks[t]).length;
-            const inventory = ['6', '7'].filter(t => state.tasks[t]).length;
-            const personal = ['8', '9'].filter(t => state.tasks[t]).length;
+            const setup = ['1', '2', '3', '4'].filter(t => state.tasks[t]).length;
+            const cleaning = ['5', '6', '7', '8', '9'].filter(t => state.tasks[t]).length;
+            const prep = ['10', '11', '12', '13', '14'].filter(t => state.tasks[t]).length;
             
+            document.getElementById('cat-setup').textContent = `${setup}/4`;
+            document.getElementById('cat-cleaning').textContent = `${cleaning}/5`;
             document.getElementById('cat-prep').textContent = `${prep}/5`;
-            document.getElementById('cat-inventory').textContent = `${inventory}/2`;
-            document.getElementById('cat-personal').textContent = `${personal}/2`;
 
             // Update submit button
             const submitBtn = document.getElementById('submitBtn');
@@ -1016,7 +1061,7 @@
                         fecha: fecha,
                         hora: time,
                         sucursal: branch,
-                        area: 'COCINA',
+                        area: 'PISO',
                         tipo: 'Apertura',
                         responsable: name,
                         estado: 'COMPLETADO'
@@ -1028,7 +1073,7 @@
             
             document.getElementById('completedTime').textContent = time;
             document.getElementById('modalMessage').textContent = 
-                `El checklist de COCINA ha sido completado exitosamente a las ${time}.`;
+                `El checklist de PISO ha sido completado exitosamente a las ${time}.`;
             
             showCompletedState();
             document.getElementById('modal').classList.add('active');
@@ -1053,10 +1098,10 @@
             const branch = document.getElementById('branch').value || 'Sin sucursal';
             const time = state.completedAt;
 
-            const message = `✅ *APERTURA COCINA COMPLETADA*
+            const message = `✅ *APERTURA PISO COMPLETADA*
 
 📍 Sucursal: ${branch}
-👨‍🍳 Responsable: ${name}
+👤 Responsable: ${name}
 ⏰ Hora: ${time}
 
 _Control Operativo Diario_`;
@@ -1075,11 +1120,11 @@ _Control Operativo Diario_`;
             const phone = document.getElementById('supervisorPhone').value;
             if (!phone) return;
 
-            const message = `⚠️ *ALERTA: CHECKLIST COCINA PENDIENTE*
+            const message = `⚠️ *ALERTA: CHECKLIST PISO PENDIENTE*
 
 📍 Sucursal: ${branch}
-👨‍🍳 Responsable: ${name}
-⏰ Hora límite: 7:15 AM
+👤 Responsable: ${name}
+⏰ Hora límite: 7:30 AM
 📋 Estado: NO COMPLETADO
 
 _El checklist de apertura no fue completado a tiempo_`;

@@ -727,7 +727,7 @@
             saveState();
 
             try {
-                await fetch('https://script.google.com/macros/s/AKfycbzKOi2Xx2-N3tjY-riOledm2vIDrw8yjSeP9wxr3LqsavJa1n4_3FCkMiFeANNjrSOkFg/exec', {
+                await fetch('https://script.google.com/macros/s/AKfycbylarDPJkuAUzaUF_FHESb71JPDms0IqyUOZQBSguYCgz56gMetqnZxeVtXZp1aPQ6VTQ/exec', {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -735,7 +735,8 @@
                         fecha: new Date().toLocaleDateString('es-DO'),
                         hora: time,
                         sucursal: branch,
-                        area: 'CIERRE COCINA',
+                        area: 'COCINA',
+                        tipo: 'Cierre',
                         responsable: name,
                         estado: 'COMPLETADO'
                     })
