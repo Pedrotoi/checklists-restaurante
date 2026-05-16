@@ -636,7 +636,7 @@
         <div class="progress-container">
             <div class="progress-header">
                 <span class="progress-label">Progreso</span>
-                <span class="progress-count" id="progressText">0 de 13 tareas</span>
+                <span class="progress-count" id="progressText">0 de 14 tareas</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
@@ -751,7 +751,7 @@
             <div class="category-header">
                 <div class="category-icon">☕</div>
                 <span class="category-title">Preparación y comunicación</span>
-                <span class="category-count" id="cat-prep">0/4</span>
+                <span class="category-count" id="cat-prep">0/5</span>
             </div>
             <div class="task-list">
                 <div class="task-item" data-task="10" onclick="toggleTask(this)">
@@ -787,6 +787,15 @@
                     </div>
                     <div class="task-content">
                         <div class="task-text">Estar peinada y arreglada lista para recibir clientes</div>
+                        <div class="task-time"></div>
+                    </div>
+                </div>
+                <div class="task-item" data-task="14" onclick="toggleTask(this)">
+                    <div class="task-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-text">Dejar conectadas cargando las tablets y ambos Verifone hasta estar al 100%</div>
                         <div class="task-time"></div>
                     </div>
                 </div>
@@ -831,7 +840,7 @@
         // Constants
         const DEADLINE_HOUR = 7;
         const DEADLINE_MINUTE = 30;
-        const TOTAL_TASKS = 13;
+        const TOTAL_TASKS = 14;
         const STORAGE_KEY = 'checklist-piso';
 
         // State
@@ -944,11 +953,11 @@
             // Update category counts
             const setup = ['1', '2', '3', '4'].filter(t => state.tasks[t]).length;
             const cleaning = ['5', '6', '7', '8', '9'].filter(t => state.tasks[t]).length;
-            const prep = ['10', '11', '12', '13'].filter(t => state.tasks[t]).length;
+            const prep = ['10', '11', '12', '13', '14'].filter(t => state.tasks[t]).length;
             
             document.getElementById('cat-setup').textContent = `${setup}/4`;
             document.getElementById('cat-cleaning').textContent = `${cleaning}/5`;
-            document.getElementById('cat-prep').textContent = `${prep}/4`;
+            document.getElementById('cat-prep').textContent = `${prep}/5`;
 
             // Update submit button
             const submitBtn = document.getElementById('submitBtn');
